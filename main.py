@@ -20,10 +20,17 @@ def operation(name) :
     SE1 = np.array([[False,False,False],[False,True,True],[False,False,False]])
     SE2 = np.array([[False,False,False],[False,True,False],[False,True,False]])
     SE3 = np.array([[True,True,True],[True,True,True],[True,True,True]])
+
+    SE_hit = np.array([[True,True,True],[False,False,False],[False,False,False]])
+    SE_miss = np.array([[False,False,False],[True,False,True],[True,True,True]])
     
     
-    #result = mop.dilation(image_matrix, SE1)
-    result = mop.erosion(image_matrix, SE1)
+    result = mop.dilation(image_matrix, SE1)
+    #result = mop.erosion(image_matrix, SE1)
+    #result = mop.opening(image_matrix, SE1)
+    #result = mop.closing(image_matrix, SE1)
+
+    #result = mop.hitOrMiss(image_matrix, SE_hit, SE_miss)
 
     Image.fromarray(result).show("New Image")
 

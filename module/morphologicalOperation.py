@@ -18,7 +18,6 @@ def dilation(image_matrix, SE):
                         isIntersection = True
             if isIntersection == True:
                 result[i,j] = True
-
     return result
 
 def erosion(image_matrix, SE):
@@ -36,14 +35,16 @@ def erosion(image_matrix, SE):
                         isInclude = False
             if isInclude == True:
                 result[i,j] = True
-
     return result
 
-def opening(image_matrix):
-    pass
+def opening(image_matrix, SE):
+    return dilation(erosion(image_matrix, SE), SE) 
 
-def closing(image_matrix):
-    pass
+def closing(image_matrix, SE):
+    return erosion(dilation(image_matrix, SE), SE) 
 
-def hitOrMiss(image_matrix):
-    pass
+def hitOrMiss(image_matrix, SE_hit, SE_miss):
+    element_1 = erosion(image_matrix, SE_hit)
+    element_2 = erosion(bso.complement(image_matrix), SE_miss)
+    return bso.intersection(element_1, element_2)
+
