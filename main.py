@@ -22,8 +22,8 @@ def operation(name) :
     SE3 = np.array([[True,True,True],[True,True,True],[True,True,True]])
     
     
-    #result = bso.translation(image_matrix, (10,10))
-    result = mop.dilation(image_matrix, SE1)
+    #result = mop.dilation(image_matrix, SE1)
+    result = mop.erosion(image_matrix, SE1)
 
     Image.fromarray(result).show("New Image")
 
