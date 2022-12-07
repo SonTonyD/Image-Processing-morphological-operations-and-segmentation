@@ -3,6 +3,25 @@ import numpy as np
 
 import module.basicSetOperation as bso
 
+#xi Structural Element
+C1_hit = np.array([[True,False,False],[True,False,False],[True,False,False]])
+C1_miss = np.array([[False,True,True],[False,False,True],[False,True,True]])
+C1 = np.array([C1_hit,C1_miss])
+
+C2_hit = np.array([[True,True,True],[False,False,False],[False,False,False]])
+C2_miss = np.array([[False,False,False],[True,False,True],[True,True,True]])
+C2 = np.array([C2_hit,C2_miss])
+
+C3_hit = np.array([[False,False,True],[False,False,True],[False,False,True]])
+C3_miss = np.array([[True,True,False],[True,False,False],[True,True,False]])
+C3 = np.array([C3_hit,C3_miss])
+
+C4_hit = np.array([[False,False,False],[False,False,False],[True,True,True]])
+C4_miss = np.array([[True,True,True],[True,False,True],[False,False,False]])
+C4 = np.array([C4_hit,C4_miss])
+
+SE_xi = np.array([C1,C2,C3,C4])
+
 #xii Structural Element
 B1_hit = np.array([[False,False,False],[False,True,False],[True,True,True]])
 B1_miss = np.array([[False,False,False],[True,False,True],[False,False,False]])
@@ -37,6 +56,8 @@ B8_miss = np.array([[False,False,True],[False,False,False],[True,False,False]])
 B8 = np.array([B8_hit,B8_miss])
 
 SE_xii = np.array([B1,B2,B3,B4,B5,B6,B7,B8])
+
+
 
 
 def dilation(image_matrix, SE):
@@ -90,6 +111,7 @@ def super_M5_variant(image_matrix, SE_xii, index, super_index):
     if super_index == 0:
         return M5_variant(image_matrix, SE_xii, index)
     return super_M5_variant(M5_variant(image_matrix, SE_xii, index), SE_xii, index, super_index-1)
+
 
 def M5_variant(image_matrix, SE_xii, index):
     if index == 0:

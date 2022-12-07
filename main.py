@@ -14,7 +14,13 @@ def saveResult(image_matrix, save_path):
 
 @click.command()
 @click.option('--name', default="lena.bmp", help='path of the image. Example:--name .\lenac.bmp  ')
-def operation(name) :
+@click.option('--dilation', default=-1, help='make dilation operation, select your structural element from 1 to 10, -2 if you want to do it for all SE')
+@click.option('--erosion', default=-1, help='make erosion operation, select your structural element from 1 to 10, -2 if you want to do it for all SE')
+@click.option('--opening', default=-1, help='make opening operation, select your structural element from 1 to 10, -2 if you want to do it for all SE')
+@click.option('--closing', default=-1, help='make closing operation, select your structural element from 1 to 10, -2 if you want to do it for all SE')
+@click.option('--hmt', default=-1, help='')
+@click.option('--m5', default=-1, help='')
+def operation(name, dilation, erosion, opening, closing, hmt, m5) :
     img = Image.open(name)
     image_matrix = np.array(img)
     Image.fromarray(image_matrix).show("New Image")
@@ -22,37 +28,85 @@ def operation(name) :
     SE1 = np.array([[False,False,False],[False,True,True],[False,False,False]])
     SE2 = np.array([[False,False,False],[False,True,False],[False,True,False]])
     SE3 = np.array([[True,True,True],[True,True,True],[True,True,True]])
+    SE4 = np.array([[False,True,False],[True,True,True],[False,True,False]])
+    SE5 = np.array([[False,False,False],[False,True,True],[False,True,False]])
+    SE6 = np.array([[False,False,False],[False,False,True],[False,True,False]])
+    SE7 = np.array([[False,False,False],[True,True,True],[False,False,False]])
+    SE8 = np.array([[False,False,False],[True,False,True],[False,False,False]])
+    SE9 = np.array([[False,False,False],[True,True,False],[True,False,False]])
+    SE10 = np.array([[False,True,True],[False,True,False],[False,False,False]])
+
+    SE_group = np.array([SE1,SE2,SE3,SE4,SE5,SE6,SE7,SE8,SE9,SE10])
+
+    if dilation != -1:
+        if dilation == -2:
+            for i in range(10):
+                result = mop.dilation(image_matrix, SE_group[i])
+                Image.fromarray(result).save("./results/dilation_SE"+str(i+1)+".bmp")
+        else:
+            result = mop.dilation(image_matrix, SE_group[dilation-1])
+            Image.fromarray(result).save("./results/dilation_SE"+str(dilation)+".bmp")
+            Image.fromarray(result).show("New Image")
+
+    if erosion != -1:
+        if erosion == -2:
+            for i in range(10):
+                result = mop.erosion(image_matrix, SE_group[i])
+                Image.fromarray(result).save("./results/erosion_SE"+str(i+1)+".bmp")
+        else:
+            result = mop.erosion(image_matrix, SE_group[erosion-1])
+            Image.fromarray(result).save("./results/erosion_SE"+str(erosion)+".bmp")
+            Image.fromarray(result).show("New Image")
+    
+    if opening != -1:
+        if opening == -2:
+            for i in range(10):
+                result = mop.opening(image_matrix, SE_group[i])
+                Image.fromarray(result).save("./results/opening_SE"+str(i+1)+".bmp")
+        else:
+            result = mop.opening(image_matrix, SE_group[opening-1])
+            Image.fromarray(result).save("./results/opening_SE"+str(opening)+".bmp")
+            Image.fromarray(result).show("New Image")
+
+    if closing != -1:
+        if closing == -2:
+            for i in range(10):
+                result = mop.closing(image_matrix, SE_group[i])
+                Image.fromarray(result).save("./results/closing_SE"+str(i+1)+".bmp")
+        else:
+            result = mop.closing(image_matrix, SE_group[closing-1])
+            Image.fromarray(result).save("./results/closing_SE"+str(closing)+".bmp")
+            Image.fromarray(result).show("New Image")
+
+    if hmt != -1:
+        if hmt == -2:
+            for i in range(4):
+                result = mop.HMT(image_matrix, mop.SE_xi[i][0], mop.SE_xi[i][1])
+                Image.fromarray(result).save("./results/hmt_SE"+str(i+1)+".bmp")
+        else:
+            result = mop.HMT(image_matrix, mop.SE_xi[hmt-1][0], mop.SE_xi[hmt-1][1])
+            Image.fromarray(result).save("./results/hmt_SE"+str(hmt)+".bmp")
+            Image.fromarray(result).show("New Image")
+    
+
+
+    if m5 != -1:
+        numberOfM5 = m5 - 1
+        SE_INDEX_CONST = 7
+        start = time.perf_counter()
+
+        result = mop.super_M5_variant(image_matrix, mop.SE_xii, SE_INDEX_CONST, numberOfM5)
+        end = time.perf_counter()
+        print(f"M5 Operation:  {end - start:0.4f} seconds")
+        print("for",numberOfM5+1," repeats")
+
+        Image.fromarray(result).save("./results/m5"+str(numberOfM5)+"repeat.bmp")
+
+
 
     
-    
-    result = mop.dilation(image_matrix, SE1)
-    #result = mop.erosion(image_matrix, SE1)
-    #result = mop.opening(image_matrix, SE1)
-    #result = mop.closing(image_matrix, SE1)
-
-    #result = mop.HMT(image_matrix, SE_hit, SE_miss)
-
-    '''
-    index must be 7
-    super_index is the number of M5_operation you want
-    '''
-    numberOfM5 = 1
-    SE_INDEX_CONST = 7
-    start = time.perf_counter()
-
-    #result = mop.super_M5_variant(image_matrix, mop.SE_xii, SE_INDEX_CONST, numberOfM5)
-    tmp = mop.M5_variant(image_matrix, mop.SE_xii, SE_INDEX_CONST)
-    result = mop.M5_variant(tmp, mop.SE_xii, SE_INDEX_CONST)
-
-    end = time.perf_counter()
-    print(f"M5 Operation:  {end - start:0.4f} seconds")
-    print("for",numberOfM5," repeats")
-
-
 
     
-
-    Image.fromarray(result).show("New Image")
 
 
 if __name__ == '__main__':
