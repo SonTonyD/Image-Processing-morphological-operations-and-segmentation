@@ -110,13 +110,15 @@ def HMT(image_matrix, SE_hit, SE_miss):
 def super_M5_variant(image_matrix, SE_xii, index, super_index):
     if super_index == 0:
         return M5_variant(image_matrix, SE_xii, index)
-    return super_M5_variant(M5_variant(image_matrix, SE_xii, index), SE_xii, index, super_index-1)
+    #return super_M5_variant(M5_variant(image_matrix, SE_xii, index), SE_xii, index, super_index-1)
+    return M5_variant(super_M5_variant(image_matrix, SE_xii, index, super_index-1), SE_xii, index)
 
 
 def M5_variant(image_matrix, SE_xii, index):
     if index == 0:
         return N_operation(image_matrix, SE_xii[index])
-    return M5_variant(N_operation(image_matrix, SE_xii[index]), SE_xii, index-1)
+    #return M5_variant(N_operation(image_matrix, SE_xii[index]), SE_xii, index-1)
+    return N_operation(M5_variant(image_matrix, SE_xii, index -1), SE_xii[index])
         
 
 def N_operation(image_matrix, SE_HMT):

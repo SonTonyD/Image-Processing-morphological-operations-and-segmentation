@@ -4,7 +4,7 @@ import click
 import time
 
 import module.morphologicalOperation as mop
-import module.basicSetOperation as bso
+
 import module.segmentationOperation as seo
 
 def saveResult(image_matrix, save_path):
@@ -20,7 +20,8 @@ def saveResult(image_matrix, save_path):
 @click.option('--closing', default=-1, help='make closing operation, select your structural element from 1 to 10, -2 if you want to do it for all SE')
 @click.option('--hmt', default=-1, help='')
 @click.option('--m5', default=-1, help='')
-def operation(name, dilation, erosion, opening, closing, hmt, m5) :
+@click.option('--growing', is_flag=True , help='')
+def operation(name, dilation, erosion, opening, closing, hmt, m5, growing) :
     img = Image.open(name)
     image_matrix = np.array(img)
     Image.fromarray(image_matrix).show("New Image")
@@ -100,7 +101,14 @@ def operation(name, dilation, erosion, opening, closing, hmt, m5) :
         print(f"M5 Operation:  {end - start:0.4f} seconds")
         print("for",numberOfM5+1," repeats")
 
-        Image.fromarray(result).save("./results/m5"+str(numberOfM5)+"repeat.bmp")
+        Image.fromarray(result).save("./results/m5_with_"+str(m5)+"_repeat.bmp")
+
+    if growing:
+        region = seo.regionGrowing(image_matrix, (23,462), 6)
+        seo.colorRegion(image_matrix, region)
+
+        Image.fromarray(image_matrix).save("./results/mono_region_growing.bmp")
+        Image.fromarray(image_matrix).show("New Image")
 
 
 

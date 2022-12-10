@@ -29,6 +29,17 @@ def sum(image_matrix_A, image_matrix_B):
                 result[i,j] = True
     return result
 
+def difference(image_matrix_A, image_matrix_B):
+    width, height = image_matrix_A.shape[0], image_matrix_A.shape[1]
+
+    for i in range(width):
+        for j in range(height):
+            if image_matrix_A[i,j] == True and image_matrix_B[i,j] == True:
+                image_matrix_A[i,j] = False
+    return image_matrix_A
+
+
+
 def reflection(image_matrix):
     width, height = image_matrix.shape[0], image_matrix.shape[1]
     for i in range(width):
