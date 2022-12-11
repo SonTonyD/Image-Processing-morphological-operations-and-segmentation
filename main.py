@@ -104,8 +104,14 @@ def operation(name, dilation, erosion, opening, closing, hmt, m5, growing) :
         Image.fromarray(result).save("./results/m5_with_"+str(m5)+"_repeat.bmp")
 
     if growing:
-        region = seo.regionGrowing(image_matrix, (23,462), 6)
+        start = time.perf_counter()
+
+        region = seo.regionGrowing_v1(image_matrix, (116,377), 25)
+        '''region = seo.regionGrowing_v2(image_matrix, (116,377), 25)'''
         seo.colorRegion(image_matrix, region)
+
+        end = time.perf_counter()
+        print(f"Region Growing:  {end - start:0.4f} seconds")
 
         Image.fromarray(image_matrix).save("./results/mono_region_growing.bmp")
         Image.fromarray(image_matrix).show("New Image")

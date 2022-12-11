@@ -6,14 +6,12 @@ import module.basicSetOperation as bso
 
 SE3 = np.array([[True,True,True],[True,True,True],[True,True,True]])
 
-def regionGrowing(image_matrix, seed_coordinate, treshold):
+def regionGrowing_v1(image_matrix, seed_coordinate, treshold):
 
     width, height = image_matrix.shape[0], image_matrix.shape[1]
     x_seed, y_seed = seed_coordinate
     region = np.array([[x_seed, y_seed]])
 
-    #define the area of the image we are going to scan
-    minXRange, maxXRange, minYRange, maxYRange = getOptimalSearchRange(image_matrix, region)
 
     #Initialize RegionImage and Boundaries_position
     boundaries_position = np.array([])
@@ -65,6 +63,32 @@ def regionGrowing(image_matrix, seed_coordinate, treshold):
         '''
 
     Image.fromarray(regionImage).show("New Image")
+    return region
+
+def regionGrowing_v2(image_matrix, seed_coordinate, treshold):
+
+    width, height = image_matrix.shape[0], image_matrix.shape[1]
+    x_seed, y_seed = seed_coordinate
+    region = np.array([[x_seed, y_seed]])
+
+
+    somethingChange = True
+    minXRange, maxXRange, minYRange, maxYRange = getOptimalSearchRange(image_matrix, region)
+
+    #If during one scan nothing is added to region, that mean that the region is fully define
+    while somethingChange == True:
+        #ResetFlag
+        somethingChange = False
+        #Region Growing bloc
+        for i in range(minXRange, maxXRange + 1):
+            for j in range(minYRange, maxYRange + 1):
+                #Check if we are outside of the image
+                if minXRange >= 0 and maxXRange < width and minYRange > 0 and maxYRange < height:
+                    if isPixelConnectedToPointRegion([i,j] , region, "8_Adjacency"):
+                        if distanceBetweenPixels(image_matrix[i,j], image_matrix[x_seed, y_seed], "euclidian") < treshold and isExistInRegion(region, [i,j]) == False:
+                            region = np.vstack((region, [i,j]))
+                            somethingChange = True
+                            minXRange, maxXRange, minYRange, maxYRange = getOptimalSearchRange(image_matrix, region)
     return region
 
 
