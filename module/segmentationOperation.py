@@ -91,6 +91,78 @@ def regionGrowing_v2(image_matrix, seed_coordinate, treshold):
                             minXRange, maxXRange, minYRange, maxYRange = getOptimalSearchRange(image_matrix, region)
     return region
 
+def regionGrowing_v3(image_matrix, seed_coordinate, treshold):
+
+    width, height = image_matrix.shape[0], image_matrix.shape[1]
+    x_seed, y_seed = seed_coordinate
+    region = np.array([[x_seed, y_seed]])
+    just_added_points = np.array([[x_seed, y_seed]])
+
+
+    somethingChange = True
+    minXRange, maxXRange, minYRange, maxYRange = getOptimalSearchRange(image_matrix, region)
+    nb_iteration = 0
+
+    #If during one scan nothing is added to region, that mean that the region is fully define
+    while somethingChange == True: 
+
+        #ResetFlag
+        somethingChange = False
+        #Reset number of new point
+        nb_new_points = 0
+
+        #Region Growing bloc
+        for i in range(minXRange, maxXRange + 1):
+            for j in range(minYRange, maxYRange + 1):
+                #Check if we are outside of the image
+                if minXRange >= 0 and maxXRange < width and minYRange > 0 and maxYRange < height:
+                    if isPixelConnectedToPointRegion([i,j] , just_added_points, "8_Adjacency"):
+                        if distanceBetweenPixels(image_matrix[i,j], image_matrix[x_seed, y_seed], "euclidian") < treshold and isExistInRegion(region, [i,j]) == False:
+                            nb_new_points  += 1
+                            region = np.vstack((region, [i,j]))
+                            just_added_points = np.vstack((just_added_points, [i,j]))
+                            somethingChange = True
+                            minXRange, maxXRange, minYRange, maxYRange = getOptimalSearchRange(image_matrix, region)
+        #Remove points which are not on boundaries of the region
+        just_added_points = just_added_points[-nb_new_points:]
+    return region
+
+def regionGrowing_v4(image_matrix, seed_coordinate, treshold):
+
+    width, height = image_matrix.shape[0], image_matrix.shape[1]
+    x_seed, y_seed = seed_coordinate
+    region = np.array([[x_seed, y_seed]])
+    just_added_points = np.array([[x_seed, y_seed]])
+
+
+    somethingChange = True
+    minXRange, maxXRange, minYRange, maxYRange = getOptimalSearchRange(image_matrix, region)
+    nb_iteration = 0
+
+    #If during one scan nothing is added to region, that mean that the region is fully define
+    while somethingChange == True: 
+
+        #ResetFlag
+        somethingChange = False
+        #Reset number of new point
+        nb_new_points = 0
+
+        #Region Growing bloc
+        for i in range(minXRange, maxXRange + 1):
+            for j in range(minYRange, maxYRange + 1):
+                #Check if we are outside of the image
+                if minXRange >= 0 and maxXRange < width and minYRange > 0 and maxYRange < height:
+                    if isPixelConnectedToPointRegion([i,j] , just_added_points, "8_Adjacency"):
+                        if distanceBetweenPixels(image_matrix[i,j], image_matrix[x_seed, y_seed], "euclidian") < treshold and isExistInRegion(region, [i,j]) == False:
+                            nb_new_points  += 1
+                            region = np.vstack((region, [i,j]))
+                            just_added_points = np.vstack((just_added_points, [i,j]))
+                            somethingChange = True
+                            minXRange, maxXRange, minYRange, maxYRange = getOptimalSearchRange(image_matrix, region)
+        #Remove points which are not on boundaries of the region
+        just_added_points = just_added_points[-nb_new_points:]
+    return region
+
 
 # Adjacency 8 neighborhood
 def isPixelConnectedToPointRegion(currentPixelPosition, region, adjacencyType):
@@ -102,6 +174,8 @@ def isPixelConnectedToPointRegion(currentPixelPosition, region, adjacencyType):
                     if i == region[k,0] and j == region[k,1]:
                         return True
         return False
+
+
 
 # EuclidianDistance
 def distanceBetweenPixels(pixelA, pixelB, distanceType):
@@ -144,10 +218,16 @@ def getOptimalSearchRange(image_matrix, region):
 
 
 
-def colorRegion(image_matrix, region):
+def colorRegion(image_matrix, region, color_value):
+    copy_image = np.copy(image_matrix)
     for k in range(region.shape[0]):
-        image_matrix[region[k,0], region[k,1]] = 255
+        copy_image[region[k,0], region[k,1]] = color_value
+    return copy_image
             
+
+
+
+
 
 
 '''

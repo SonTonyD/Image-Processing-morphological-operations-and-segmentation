@@ -4,7 +4,7 @@ import click
 import time
 
 import module.morphologicalOperation as mop
-
+import module.basicSetOperation as bso
 import module.segmentationOperation as seo
 
 def saveResult(image_matrix, save_path):
@@ -24,6 +24,7 @@ def saveResult(image_matrix, save_path):
 def operation(name, dilation, erosion, opening, closing, hmt, m5, growing) :
     img = Image.open(name)
     image_matrix = np.array(img)
+    width, height = image_matrix.shape[0], image_matrix.shape[1]
     Image.fromarray(image_matrix).show("New Image")
 
     SE1 = np.array([[False,False,False],[False,True,True],[False,False,False]])
@@ -104,17 +105,40 @@ def operation(name, dilation, erosion, opening, closing, hmt, m5, growing) :
         Image.fromarray(result).save("./results/m5_with_"+str(m5)+"_repeat.bmp")
 
     if growing:
-        start = time.perf_counter()
+        '''
+        x = np.arange(10, width, 100)
+        y = np.arange(10, height, 100)
+        region_list = np.array([])
 
-        region = seo.regionGrowing_v1(image_matrix, (116,377), 25)
-        '''region = seo.regionGrowing_v2(image_matrix, (116,377), 25)'''
-        seo.colorRegion(image_matrix, region)
+        treshold = 2
+
+        for i in x:
+            for j in y:
+                regionImg = seo.regionGrowing_v1(image_matrix, (i,j), treshold)
+                region_list = np.vstack((region_list, regionImg))
+        
+        index = 0
+        result = image_matrix
+        for region in region_list:
+            result = seo.colorRegion(result, region, 255-8*index)
+            index += 1
+
+        Image.fromarray(result).save("./results/mono_region_growing.bmp")
+        Image.fromarray(result).show("New Image")
+
+        '''
+        start = time.perf_counter()
+        #ImgRegion = seo.regionGrowing_v1(image_matrix, (116,377), 25) # 226 seconds
+        #ImgRegion = seo.regionGrowing_v2(image_matrix, (116,377), 25) # 12 seconds
+        ImgRegion = seo.regionGrowing_v3(image_matrix, (16,450), 15) # 1.3 seconds
+        result = seo.colorRegion(image_matrix, ImgRegion, 255)
 
         end = time.perf_counter()
         print(f"Region Growing:  {end - start:0.4f} seconds")
 
-        Image.fromarray(image_matrix).save("./results/mono_region_growing.bmp")
-        Image.fromarray(image_matrix).show("New Image")
+        Image.fromarray(result).save("./results/mono_region_growing.bmp")
+        Image.fromarray(result).show("New Image")
+        
 
 
 
