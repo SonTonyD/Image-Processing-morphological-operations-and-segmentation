@@ -128,9 +128,20 @@ def operation(name, dilation, erosion, opening, closing, hmt, m5, growing) :
 
         '''
         start = time.perf_counter()
+        #SMALL REGION
         #ImgRegion = seo.regionGrowing_v1(image_matrix, (116,377), 25) # 226 seconds
         #ImgRegion = seo.regionGrowing_v2(image_matrix, (116,377), 25) # 12 seconds
-        ImgRegion = seo.regionGrowing_v3(image_matrix, (16,450), 15) # 1.3 seconds
+        #ImgRegion = seo.regionGrowing_v3(image_matrix, (116,377), 25) # 1.3 seconds
+
+        #MEDIUM REGION
+        #ImgRegion = seo.regionGrowing_v3(image_matrix, (16,450), 15) # 12 seconds
+        #ImgRegion = seo.regionGrowing_v4(image_matrix, (16,450), 15) # 10 seconds
+        #ImgRegion = seo.regionGrowing_v5(image_matrix, (16,450), 15)  # 0.66 seconds
+
+        #LARGE REGION
+        #ImgRegion = seo.regionGrowing_v3(image_matrix, (162,46), 15) # 514 seconds
+        #ImgRegion = seo.regionGrowing_v4(image_matrix, (162,46), 15) # 125 seconds
+        ImgRegion = seo.regionGrowing_v5(image_matrix, (162,46), 15)  #  15 seconds
         result = seo.colorRegion(image_matrix, ImgRegion, 255)
 
         end = time.perf_counter()
