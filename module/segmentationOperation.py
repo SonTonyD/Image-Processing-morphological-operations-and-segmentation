@@ -178,10 +178,13 @@ def regionGrowing_v5(image_matrix, seed_coordinate, treshold):
         nb_new_points = 0
 
         #Region Growing bloc
+        #use the just added points
         for point in just_added_points:
             i, j = point[0], point[1]
+            #Search in the neighborhood of this point
             for k in range(-1,2):
                 for l in range(-1,2):
+                    #Check if the coordinates are outside of the image
                     if i+k >= 0 and i+k < width and j+l > 0 and j+l < height:
                         if checked_points[i+k,j+l] == False:
                             if isPixelConnectedToPointRegion([i+k,j+l] , just_added_points, "8_Adjacency"):
@@ -195,6 +198,36 @@ def regionGrowing_v5(image_matrix, seed_coordinate, treshold):
         #Remove points which are not on boundaries of the region
         just_added_points = just_added_points[-nb_new_points:]
     return region
+
+
+
+
+def mergeRegion(image_matrix, threshold, grid_gap):
+    copy_img = np.copy(image_matrix)
+
+    width, height = image_matrix.shape[0], image_matrix.shape[1]
+    x_seed = np.arange(10, width, grid_gap)
+    y_seed = np.arange(10, height, grid_gap)
+
+    region_list = []
+    seed_value = []
+
+    region_computed = 0
+
+    for x in x_seed:
+        for y in y_seed:
+            seed_value.append(image_matrix[x,y])
+            region = regionGrowing_v5(image_matrix, (x,y), threshold)
+            region_list.append(region)
+            
+            region_computed += 1
+            print("Region Computed : ", region_computed)
+    
+    for i in range(len(region_list)):
+        copy_img = colorRegion(copy_img, region_list[i], seed_value[i])
+    
+    return copy_img
+
 
 
 # Adjacency 8 neighborhood
@@ -255,6 +288,24 @@ def colorRegion(image_matrix, region, color_value):
     copy_image = np.copy(image_matrix)
     for k in range(region.shape[0]):
         copy_image[region[k,0], region[k,1]] = color_value
+    return copy_image
+
+def colorBoundaries(image_matrix, region, color_value):
+    copy_image = np.copy(image_matrix)
+    width, height = image_matrix.shape[0], image_matrix.shape[1]
+    regionImage = np.full((width, height), False)
+    for point in region:
+        regionImage[point[0], point[1]] = True
+    
+    boundariesImage =  bso.difference(mop.dilation(regionImage, SE3), regionImage)
+    boundaries_position = np.array([[10, 10]])
+    for i in range(width):
+        for j in range(height):
+            if boundariesImage[i,j] == True:
+                boundaries_position = np.vstack((boundaries_position, [i,j]))
+
+    for k in range(boundaries_position.shape[0]):
+        copy_image[boundaries_position[k,0], boundaries_position[k,1]] = color_value
     return copy_image
             
 
