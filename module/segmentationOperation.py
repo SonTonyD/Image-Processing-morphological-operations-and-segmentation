@@ -200,7 +200,7 @@ def regionGrowing_v5(image_matrix, seed_coordinate, treshold):
         just_added_points = just_added_points[-nb_new_points:]
     return region
 
-def regionGrowing_v6(image_matrix, seed_coordinate, treshold):
+def regionGrowing_v6(image_matrix, seed_coordinate, treshold, homogeneity_criteria):
     width, height = image_matrix.shape[0], image_matrix.shape[1]
     x_seed, y_seed = seed_coordinate
     region = np.array([[x_seed, y_seed]])
@@ -229,7 +229,9 @@ def regionGrowing_v6(image_matrix, seed_coordinate, treshold):
                     #Check if the coordinates are outside of the image
                     if i+k >= 0 and i+k < width and j+l > 0 and j+l < height:
                         if checked_points[i+k,j+l] == False:
-                            if distanceBetweenPixels(image_matrix[i+k,j+l], image_matrix[x_seed, y_seed]) < treshold:
+                            if homogeneity_criteria == 0 : comparedElement = image_matrix[x_seed, y_seed]
+                            if homogeneity_criteria == 1 : comparedElement = meanIntensity(image_matrix, region)
+                            if distanceBetweenPixels(image_matrix[i+k,j+l], comparedElement) < treshold:
                                 nb_new_points  += 1
                                 region = np.vstack((region, [i+k,j+l]))
                                 just_added_points = np.vstack((just_added_points, [i+k,j+l]))
@@ -258,7 +260,7 @@ def mergeRegion(image_matrix, threshold, grid_gap):
     for x in x_seed:
         for y in y_seed:
             seed_value.append(image_matrix[x,y])
-            region = regionGrowing_v6(image_matrix, (x,y), threshold)
+            region = regionGrowing_v6(image_matrix, (x,y), threshold, 0)
             region_list.append(region)
             
             region_computed += 1
@@ -269,6 +271,13 @@ def mergeRegion(image_matrix, threshold, grid_gap):
     
     return copy_img
 
+
+#compute the mean intensity of the region
+def meanIntensity(image_matrix, region):
+    sum = 0
+    for point in region:
+        sum += image_matrix[point[0], point[1]]
+    return int(sum/region.shape[0])
 
 
 # Adjacency 8 neighborhood
@@ -348,6 +357,23 @@ def colorBoundaries(image_matrix, region, color_value):
         copy_image[boundaries_position[k,0], boundaries_position[k,1]] = color_value
     return copy_image
             
+def colorBoundariesEmptyImage(image_matrix, region):
+    width, height = image_matrix.shape[0], image_matrix.shape[1]
+    copy_image = np.full((width, height), True)
+    regionImage = np.full((width, height), False)
+    for point in region:
+        regionImage[point[0], point[1]] = True
+    
+    boundariesImage =  bso.difference(mop.dilation(regionImage, SE3), regionImage)
+    boundaries_position = np.array([[10, 10]])
+    for i in range(width):
+        for j in range(height):
+            if boundariesImage[i,j] == True:
+                boundaries_position = np.vstack((boundaries_position, [i,j]))
+
+    for k in range(boundaries_position.shape[0]):
+        copy_image[boundaries_position[k,0], boundaries_position[k,1]] = False
+    return copy_image
 
 
 

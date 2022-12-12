@@ -26,7 +26,7 @@ def nameParsing(name):
 @click.option('--closing', default=-1, help='make closing operation, select your structural element from 1 to 10, -2 if you want to do it for all SE')
 @click.option('--hmt', default=-1, help='')
 @click.option('--m5', default=-1, help='')
-@click.option('--growing', nargs=4, type=int , help=' region growing, parameters x_seed, y_seed, threshold, colorationType = 0 (boundaries) or 1 (region)')
+@click.option('--growing', nargs=5, type=int , help=' region growing, parameters x_seed, y_seed, threshold, colorationType = 0 (boundaries) or 1 (region), homogeneity criteria (0 difference with the intensity of seed pixel, 1 difference with mean of the intensity of the region)')
 @click.option('--merging', nargs=2, type=int , help=' merging region, parameters grid_gap, threshold')
 def operation(name, dilation, erosion, opening, closing, hmt, m5, growing, merging) :
     img = Image.open(name)
@@ -135,16 +135,19 @@ def operation(name, dilation, erosion, opening, closing, hmt, m5, growing, mergi
         y_seed = growing[1]
         threshold = growing[2]
         coloration = growing[3]
+        homogeneity_criteria = growing[4]
 
         
 
         #ImgRegion = seo.regionGrowing_v5(image_matrix, (x_seed, y_seed), threshold)
-        ImgRegion = seo.regionGrowing_v6(image_matrix, (x_seed, y_seed), threshold)
+        ImgRegion = seo.regionGrowing_v6(image_matrix, (x_seed, y_seed), threshold, homogeneity_criteria)
         
         if coloration == 0:
             result = seo.colorRegion(image_matrix, ImgRegion, 255)
         if coloration == 1:
             result = seo.colorBoundaries(image_matrix, ImgRegion, 255)
+        if coloration == 2:
+            result = seo.colorBoundariesEmptyImage(image_matrix, ImgRegion)
         
 
         end = time.perf_counter()
