@@ -27,9 +27,7 @@ def regionGrowing_v1(image_matrix, seed_coordinate, treshold):
         somethingChange = False
         
         #Build boundariesImage
-        boundariesImage =  bso.difference(mop.dilation(regionImage, SE3), regionImage)
-        
-
+        boundariesImage =  bso.difference(mop.dilation(regionImage, SE3), regionImage) 
         #Reset boundaries position and update Region Image
         boundaries_position = np.array([[x_seed, y_seed]])
         for i in range(width):
@@ -44,24 +42,6 @@ def regionGrowing_v1(image_matrix, seed_coordinate, treshold):
                 region = np.vstack((region, [i,j]))
                 regionImage[i,j] = True 
                 somethingChange = True
-
-
-
-
-
-        '''
-        #Region Growing bloc
-        for i in range(minXRange, maxXRange + 1):
-            for j in range(minYRange, maxYRange + 1):
-                #Check if we are outside of the image
-                if minXRange >= 0 and maxXRange < width and minYRange > 0 and maxYRange < height:
-                    if isPixelConnectedToPointRegion([i,j] , region, "8_Adjacency"):
-                        if distanceBetweenPixels(image_matrix[i,j], image_matrix[x_seed, y_seed], "euclidian") < treshold and isExistInRegion(region, [i,j]) == False:
-                            region = np.vstack((region, [i,j]))
-                            somethingChange = True
-                            minXRange, maxXRange, minYRange, maxYRange = getOptimalSearchRange(image_matrix, region)
-        '''
-
     Image.fromarray(regionImage).show("New Image")
     return region
 
@@ -377,18 +357,6 @@ def colorBoundariesEmptyImage(image_matrix, region):
 
 
 
-
-
-
-'''
-def regionGrowing(image_matrix, seed_location):
-    #listOfRegion = initializeListOfRegion(seed_location)
-    #mean_region_list = initializeRegionsMean(image_matrix, seed_location)
-    #unallocated_pixels = seed_location
-
-    for region in listOfRegion:
-        for pixel in region:
-'''
 
 
 
