@@ -40,7 +40,7 @@ def regionGrowing_v1(image_matrix, seed_coordinate, treshold):
         for k in range(boundaries_position.shape[0]):
             i = boundaries_position[k,0]
             j = boundaries_position[k,1]
-            if distanceBetweenPixels(image_matrix[i,j], image_matrix[x_seed, y_seed], "euclidian") < treshold and isExistInRegion(region, [i,j]) == False:
+            if distanceBetweenPixels(image_matrix[i,j], image_matrix[x_seed, y_seed]) < treshold and isExistInRegion(region, [i,j]) == False:
                 region = np.vstack((region, [i,j]))
                 regionImage[i,j] = True 
                 somethingChange = True
@@ -85,7 +85,7 @@ def regionGrowing_v2(image_matrix, seed_coordinate, treshold):
                 #Check if we are outside of the image
                 if minXRange >= 0 and maxXRange < width and minYRange > 0 and maxYRange < height:
                     if isPixelConnectedToPointRegion([i,j] , region, "8_Adjacency"):
-                        if distanceBetweenPixels(image_matrix[i,j], image_matrix[x_seed, y_seed], "euclidian") < treshold and isExistInRegion(region, [i,j]) == False:
+                        if distanceBetweenPixels(image_matrix[i,j], image_matrix[x_seed, y_seed]) < treshold and isExistInRegion(region, [i,j]) == False:
                             region = np.vstack((region, [i,j]))
                             somethingChange = True
                             minXRange, maxXRange, minYRange, maxYRange = getOptimalSearchRange(image_matrix, region)
@@ -116,7 +116,7 @@ def regionGrowing_v3(image_matrix, seed_coordinate, treshold):
                 #Check if we are outside of the image
                 if minXRange >= 0 and maxXRange < width and minYRange > 0 and maxYRange < height:
                     if isPixelConnectedToPointRegion([i,j] , just_added_points, "8_Adjacency"):
-                        if distanceBetweenPixels(image_matrix[i,j], image_matrix[x_seed, y_seed], "euclidian") < treshold and isExistInRegion(region, [i,j]) == False:
+                        if distanceBetweenPixels(image_matrix[i,j], image_matrix[x_seed, y_seed]) < treshold and isExistInRegion(region, [i,j]) == False:
                             nb_new_points  += 1
                             region = np.vstack((region, [i,j]))
                             just_added_points = np.vstack((just_added_points, [i,j]))
@@ -150,7 +150,7 @@ def regionGrowing_v4(image_matrix, seed_coordinate, treshold):
                 for l in range(-1,2):
                     if i+k >= 0 and i+k < width and j+l > 0 and j+l < height:
                         if isPixelConnectedToPointRegion([i+k,j+l] , just_added_points, "8_Adjacency"):
-                            if distanceBetweenPixels(image_matrix[i+k,j+l], image_matrix[x_seed, y_seed], "euclidian") < treshold and isExistInRegion(region, [i+k,j+l]) == False:
+                            if distanceBetweenPixels(image_matrix[i+k,j+l], image_matrix[x_seed, y_seed]) < treshold and isExistInRegion(region, [i+k,j+l]) == False:
                                 nb_new_points  += 1
                                 region = np.vstack((region, [i+k,j+l]))
                                 just_added_points = np.vstack((just_added_points, [i+k,j+l]))
@@ -165,6 +165,7 @@ def regionGrowing_v5(image_matrix, seed_coordinate, treshold):
     region = np.array([[x_seed, y_seed]])
     just_added_points = np.array([[x_seed, y_seed]])
     checked_points = np.full((width, height), False)
+    
 
 
     somethingChange = True
@@ -188,7 +189,7 @@ def regionGrowing_v5(image_matrix, seed_coordinate, treshold):
                     if i+k >= 0 and i+k < width and j+l > 0 and j+l < height:
                         if checked_points[i+k,j+l] == False:
                             if isPixelConnectedToPointRegion([i+k,j+l] , just_added_points, "8_Adjacency"):
-                                if distanceBetweenPixels(image_matrix[i+k,j+l], image_matrix[x_seed, y_seed], "euclidian") < treshold and isExistInRegion(region, [i+k,j+l]) == False:
+                                if distanceBetweenPixels(image_matrix[i+k,j+l], image_matrix[x_seed, y_seed]) < treshold and isExistInRegion(region, [i+k,j+l]) == False:
                                     nb_new_points  += 1
                                     region = np.vstack((region, [i+k,j+l]))
                                     just_added_points = np.vstack((just_added_points, [i+k,j+l]))
@@ -196,6 +197,46 @@ def regionGrowing_v5(image_matrix, seed_coordinate, treshold):
                             #Say that this point is already checked, so we don't need to re-check it
                             checked_points[i+k,j+l] = True
         #Remove points which are not on boundaries of the region
+        just_added_points = just_added_points[-nb_new_points:]
+    return region
+
+def regionGrowing_v6(image_matrix, seed_coordinate, treshold):
+    width, height = image_matrix.shape[0], image_matrix.shape[1]
+    x_seed, y_seed = seed_coordinate
+    region = np.array([[x_seed, y_seed]])
+    just_added_points = np.array([[x_seed, y_seed]])
+    checked_points = np.full((width, height), False)
+    
+
+
+    somethingChange = True
+
+    #If during one scan nothing is added to region, that mean that the region is fully define
+    while somethingChange == True: 
+
+        #ResetFlag
+        somethingChange = False
+        #Reset number of new point
+        nb_new_points = 0
+
+        #Region Growing bloc
+        #use the just added points
+        for point in just_added_points:
+            i, j = point[0], point[1]
+            #Search in the neighborhood of this point
+            for k in range(-1,2):
+                for l in range(-1,2):
+                    #Check if the coordinates are outside of the image
+                    if i+k >= 0 and i+k < width and j+l > 0 and j+l < height:
+                        if checked_points[i+k,j+l] == False:
+                            if distanceBetweenPixels(image_matrix[i+k,j+l], image_matrix[x_seed, y_seed]) < treshold:
+                                nb_new_points  += 1
+                                region = np.vstack((region, [i+k,j+l]))
+                                just_added_points = np.vstack((just_added_points, [i+k,j+l]))
+                                somethingChange = True
+                            #Say that this point is already checked, so we don't need to re-check it
+                            checked_points[i+k,j+l] = True
+        #Remove points which are not on boundaries of the region,=> only keep the last added points
         just_added_points = just_added_points[-nb_new_points:]
     return region
 
@@ -217,7 +258,7 @@ def mergeRegion(image_matrix, threshold, grid_gap):
     for x in x_seed:
         for y in y_seed:
             seed_value.append(image_matrix[x,y])
-            region = regionGrowing_v5(image_matrix, (x,y), threshold)
+            region = regionGrowing_v6(image_matrix, (x,y), threshold)
             region_list.append(region)
             
             region_computed += 1
@@ -244,9 +285,8 @@ def isPixelConnectedToPointRegion(currentPixelPosition, region, adjacencyType):
 
 
 # EuclidianDistance
-def distanceBetweenPixels(pixelA, pixelB, distanceType):
-    if distanceType == "euclidian":
-        return abs(int(pixelB) - int(pixelA))
+def distanceBetweenPixels(pixelA, pixelB):
+    return abs(int(pixelB) - int(pixelA))
 
 def isExistInRegion(region, currentPixelPosition):
     x_pixel, y_pixel = currentPixelPosition

@@ -2,6 +2,7 @@ from PIL import Image
 import numpy as np
 import click
 import time
+import re
 
 import module.morphologicalOperation as mop
 import module.basicSetOperation as bso
@@ -10,6 +11,11 @@ import module.segmentationOperation as seo
 def saveResult(image_matrix, save_path):
     Image.fromarray(image_matrix).save(save_path)
     Image.fromarray(image_matrix).show("New Image")
+
+def nameParsing(name):
+    regex = re.compile(r'(?!images\b)\b(?!bmp\b)\b\w+')
+    newName = regex.search(name).group()
+    return newName
 
 
 @click.command()
@@ -132,7 +138,8 @@ def operation(name, dilation, erosion, opening, closing, hmt, m5, growing, mergi
 
         
 
-        ImgRegion = seo.regionGrowing_v5(image_matrix, (x_seed, y_seed), threshold)
+        #ImgRegion = seo.regionGrowing_v5(image_matrix, (x_seed, y_seed), threshold)
+        ImgRegion = seo.regionGrowing_v6(image_matrix, (x_seed, y_seed), threshold)
         
         if coloration == 0:
             result = seo.colorRegion(image_matrix, ImgRegion, 255)
@@ -143,8 +150,8 @@ def operation(name, dilation, erosion, opening, closing, hmt, m5, growing, mergi
         end = time.perf_counter()
         print(f"Region Growing:  {end - start:0.4f} seconds")
 
-        
-        label = "_"+str(x_seed)+"_"+str(y_seed)+"_"+str(threshold)+"_"+str(coloration)+"_"
+        name = nameParsing(name)
+        label = "_"+str(name)+"_"+str(x_seed)+"_"+str(y_seed)+"_"+str(threshold)+"_"+str(coloration)+"_"
         Image.fromarray(result).save("./results/region_growing"+label+".bmp")
         Image.fromarray(result).show("New Image")
     
@@ -158,7 +165,8 @@ def operation(name, dilation, erosion, opening, closing, hmt, m5, growing, mergi
         end = time.perf_counter()
         print(f"Merge Region:  {end - start:0.4f} seconds")
 
-        label = "_"+str(grid_gap)+"_"+str(threshold)+"_"
+        name = nameParsing(name)
+        label = "_"+str(name)+"_"+str(grid_gap)+"_"+str(threshold)+"_"
         Image.fromarray(result).save("./results/region_merging"+label+".bmp")
         Image.fromarray(result).show("New Image")
         
