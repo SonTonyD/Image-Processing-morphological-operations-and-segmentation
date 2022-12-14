@@ -3,6 +3,7 @@ from PIL import Image
 import numpy as np
 import module.morphologicalOperation as mop
 import module.basicSetOperation as bso
+import module.imageGrayScaleConverterToRGB as rgb
 
 SE3 = np.array([[True,True,True],[True,True,True],[True,True,True]])
 
@@ -314,9 +315,9 @@ def getOptimalSearchRange(image_matrix, region):
 
 
 def colorRegion(image_matrix, region, color_value):
-    copy_image = np.copy(image_matrix)
+    copy_image = rgb.convertToRGB(image_matrix)
     for k in range(region.shape[0]):
-        copy_image[region[k,0], region[k,1]] = color_value
+        copy_image[region[k,0], region[k,1],0] = color_value
     return copy_image
 
 def colorBoundaries(image_matrix, region, color_value):

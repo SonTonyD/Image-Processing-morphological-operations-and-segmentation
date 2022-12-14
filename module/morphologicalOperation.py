@@ -20,7 +20,11 @@ C4_hit = np.array([[False,False,False],[False,False,False],[True,True,True]])
 C4_miss = np.array([[True,True,True],[True,False,True],[False,False,False]])
 C4 = np.array([C4_hit,C4_miss])
 
-SE_xi = np.array([C1,C2,C3,C4])
+custom_miss = np.array([[True,True,False],[False,True,False],[False,True,False]])
+custom_hit = np.array([[False,False,True],[True,False,True],[True,False,True]])
+custom_se = np.array([custom_hit, custom_miss])
+
+SE_xi = np.array([C1,C2,C3,C4, custom_se])
 
 #xii Structural Element
 B1_hit = np.array([[False,False,False],[False,True,False],[True,True,True]])
@@ -56,6 +60,8 @@ B8_miss = np.array([[False,False,True],[False,False,False],[True,False,False]])
 B8 = np.array([B8_hit,B8_miss])
 
 SE_xii = np.array([B1,B2,B3,B4,B5,B6,B7,B8])
+
+
 
 
 
@@ -122,7 +128,8 @@ def M5_variant(image_matrix, SE_xii, index):
         
 
 def N_operation(image_matrix, SE_HMT):
-    element_1 = bso.complement(HMT(image_matrix, SE_HMT[0], SE_HMT[1]))
+    element_1 = bso.complement(HMT(image_matrix, SE_HMT[1], SE_HMT[0]))
+    #element_1 = bso.complement(HMT(image_matrix, SE_HMT[0], SE_HMT[1]))
     return bso.intersection(image_matrix, element_1)
 
 

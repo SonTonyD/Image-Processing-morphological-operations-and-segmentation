@@ -114,22 +114,21 @@ def operation(name, dilation, erosion, opening, closing, hmt, m5, growing, mergi
     if len(growing) != 0:
         start = time.perf_counter()
         #SMALL REGION
-        #ImgRegion = seo.regionGrowing_v1(image_matrix, (116,377), 25) # 226 seconds
-        #ImgRegion = seo.regionGrowing_v2(image_matrix, (116,377), 25) # 12 seconds
-        #ImgRegion = seo.regionGrowing_v3(image_matrix, (116,377), 25) # 1.3 seconds
+        #ImgRegion = seo.regionGrowing_v1(image_matrix, (116,377), 25, 0) # 226 seconds
+        #ImgRegion = seo.regionGrowing_v2(image_matrix, (116,377), 25, 0) # 12 seconds
+        #ImgRegion = seo.regionGrowing_v3(image_matrix, (116,377), 25, 0) # 1.3 seconds
 
         #MEDIUM REGION
-        #ImgRegion = seo.regionGrowing_v3(image_matrix, (16,450), 15) # 12 seconds
-        #ImgRegion = seo.regionGrowing_v4(image_matrix, (16,450), 15) # 10 seconds
-        #ImgRegion = seo.regionGrowing_v5(image_matrix, (16,450), 15) # 0.66 seconds
+        #ImgRegion = seo.regionGrowing_v3(image_matrix, (16,450), 15, 0) # 12 seconds
+        #ImgRegion = seo.regionGrowing_v4(image_matrix, (16,450), 15, 0) # 10 seconds
+        #ImgRegion = seo.regionGrowing_v5(image_matrix, (16,450), 15, 0) # 0.66 seconds
 
         #LARGE REGION
-        #ImgRegion = seo.regionGrowing_v3(image_matrix, (162,46), 15) # 514 seconds
-        #ImgRegion = seo.regionGrowing_v4(image_matrix, (162,46), 15) # 125 seconds
-        #ImgRegion = seo.regionGrowing_v5(image_matrix, (162,46), 15) #  15 seconds
+        #ImgRegion = seo.regionGrowing_v3(image_matrix, (162,46), 15, 0) # 514 seconds
+        #ImgRegion = seo.regionGrowing_v4(image_matrix, (162,46), 15, 0) # 125 seconds
+        #ImgRegion = seo.regionGrowing_v5(image_matrix, (162,46), 15, 0) # 15 seconds
+        #ImgRegion = seo.regionGrowing_v6(image_matrix, (162,46), 15, 0) # 7 seconds
 
-        #VERY LARGE REGION
-        #ImgRegion = seo.regionGrowing_v5(image_matrix, (38,100), 15) #  15 seconds
 
         x_seed = growing[0]
         y_seed = growing[1]
